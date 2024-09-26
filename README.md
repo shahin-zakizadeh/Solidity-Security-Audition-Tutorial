@@ -10,9 +10,10 @@ We’ve prioritized the most prevalent security issues, offering practical examp
 Whether you're a developer aiming to write secure smart contracts or an auditor looking to hone your skills, this guide equips you with the knowledge to detect, understand, and mitigate security risks in Solidity. By mastering these vulnerabilities and their solutions, you’ll contribute to the safety and trustworthiness of the blockchain ecosystem.
 
 Let's embark on the journey of building secure decentralized applications and safeguarding the future of blockchain technology.
+
 ---
 
-For security auditors, the most critical vulnerabilities to know and address first are those that frequently result in real-world exploits. This is reordered list of smart contract vulnerabilities based on the most common and important issues that security auditors should be familiar with:
+For security auditors, the most critical vulnerabilities to know and address first are those that frequently result in real-world exploits. The vulnerabilities are ordered based on their severity, frequency of occurrence, and the potential impact they can have if exploited. This ensures that auditors focus on the most significant risks first when assessing the security of smart contracts. This is reordered list of smart contract vulnerabilities based on the most common and important issues that security auditors should be familiar with:
 
 
 ## **Contents** (Prioritized for Security Auditors)
