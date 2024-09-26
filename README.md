@@ -16,17 +16,23 @@ For security auditors, the most critical vulnerabilities to know and address fir
 
 ## **Contents** (Prioritized for Security Auditors)
 
-1. [Reentrancy Vulnerabilities](#Re-Entrancy)
+## Contents
+
+1. [Re-Entrancy](#re-entrancy)
 2. [Unchecked External Call Return Values](#unchecked-external-call-return-values)
-3. [Phishing via `tx.origin`](#phishing-via-txorigin)
-4. [Integer Overflow/Underflow](#integer-overflowunderflow)
+3. [Phishing with `tx.origin`](#phishing-with-txorigin)
+4. [Arithmetic Overflow and Underflow](#arithmetic-overflow-and-underflow)
 5. [Access Control and Ownership](#access-control-and-ownership)
 6. [Flash Loan Attacks Explanation and Mitigation](#flash-loan-attacks-explanation-and-mitigation)
-7. [Front-Running Attacks](#front-running-attacks)
+   - [1. Vulnerable to Price Manipulation with Flash Loans](#1-vulnerable-to-price-manipulation-with-flash-loans)
+   - [2. Vulnerable to Re-Entrancy with Flash Loans](#2-vulnerable-to-re-entrancy-with-flash-loans)
+   - [3. Vulnerable to Oracle Manipulation with Flash Loans](#3-vulnerable-to-oracle-manipulation-with-flash-loans)
+   - [4. Vulnerable to Liquidation Attacks with Flash Loans](#4-vulnerable-to-liquidation-attacks-with-flash-loans)
+7. [Front Running](#front-running)
 8. [Delegatecall Injection](#delegatecall-injection)
 9. [Oracle Manipulation](#oracle-manipulation)
 10. [Denial of Service (DoS)](#denial-of-service-dos)
-11. [Self-Destruct Vulnerabilities](#self-destruct-vulnerabilities)
+11. [Self Destruct](#self-destruct)
 12. [Signature Replay Attacks](#signature-replay-attacks)
 13. [Fallback Function Exploitation](#fallback-function-exploitation)
 14. [Contract Interaction Vulnerabilities](#contract-interaction-vulnerabilities)
@@ -45,10 +51,17 @@ For security auditors, the most critical vulnerabilities to know and address fir
 27. [Bypass Contract Size Check](#bypass-contract-size-check)
 28. [Storage Collision in Proxy Patterns](#storage-collision-in-proxy-patterns)
 29. [Contract Upgrade Vulnerabilities](#contract-upgrade-vulnerabilities)
-30. [Gas Optimization](#gas-optimization)
+30. [Code Optimization](#code-optimization)
+    - [1. Minimize Storage Access](#1-minimize-storage-access)
+    - [2. Avoid Loops](#2-avoid-loops)
+    - [3. Optimize Data Structures](#3-optimize-data-structures)
+    - [4. Use Precompiled Contracts](#4-use-precompiled-contracts)
+    - [5. Enable Compiler Optimizations](#5-enable-compiler-optimizations)
 31. [Function Design](#function-design)
-32. [Additional Gas Optimization Techniques](#additional-gas-optimization-techniques)
-
+    - [1. Use External Functions](#1-use-external-functions)
+    - [2. Minimize Function Parameters](#2-minimize-function-parameters)
+32. [Additional Tips for Gas Optimization](#additional-tips-for-gas-optimization)
+    - [Use Events Wisely](#use-events-wisely)
 ---
 
 ### **Rationale Behind the Ordering:**
