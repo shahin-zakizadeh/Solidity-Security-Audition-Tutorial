@@ -14,125 +14,175 @@ Let's embark on the journey of building secure decentralized applications and sa
 
 For security auditors, the most critical vulnerabilities to know and address first are those that frequently result in real-world exploits. This is reordered list of smart contract vulnerabilities based on the most common and important issues that security auditors should be familiar with:
 
+
 ## **Contents** (Prioritized for Security Auditors)
 
-## Contents
-
-1. [Re-Entrancy](#re-entrancy)
-2. [Unchecked External Call Return Values](#unchecked-external-call-return-values)
-3. [Phishing with `tx.origin`](#phishing-with-txorigin)
-4. [Arithmetic Overflow and Underflow](#arithmetic-overflow-and-underflow)
-5. [Access Control and Ownership](#access-control-and-ownership)
+1. [Reentrancy Vulnerabilities](#reentrancy-vulnerabilities)
+2. [Access Control and Ownership](#access-control-and-ownership)
+3. [Authorization Flaws](#authorization-flaws)
+4. [Integer Overflow and Underflow](#integer-overflow-and-underflow)
+5. [Unprotected Initializer Functions in Upgradable Contracts](#unprotected-initializer-functions-in-upgradable-contracts)
 6. [Flash Loan Attacks Explanation and Mitigation](#flash-loan-attacks-explanation-and-mitigation)
    - [1. Vulnerable to Price Manipulation with Flash Loans](#1-vulnerable-to-price-manipulation-with-flash-loans)
-   - [2. Vulnerable to Re-Entrancy with Flash Loans](#2-vulnerable-to-re-entrancy-with-flash-loans)
+   - [2. Vulnerable to Reentrancy with Flash Loans](#2-vulnerable-to-reentrancy-with-flash-loans)
    - [3. Vulnerable to Oracle Manipulation with Flash Loans](#3-vulnerable-to-oracle-manipulation-with-flash-loans)
    - [4. Vulnerable to Liquidation Attacks with Flash Loans](#4-vulnerable-to-liquidation-attacks-with-flash-loans)
-7. [Front Running](#front-running)
-8. [Delegatecall Injection](#delegatecall-injection)
-9. [Oracle Manipulation](#oracle-manipulation)
-10. [Denial of Service (DoS)](#denial-of-service-dos)
-11. [Self Destruct](#self-destruct)
-12. [Signature Replay Attacks](#signature-replay-attacks)
-13. [Fallback Function Exploitation](#fallback-function-exploitation)
-14. [Contract Interaction Vulnerabilities](#contract-interaction-vulnerabilities)
-15. [Cross-Chain Replay Attacks](#cross-chain-replay-attacks)
-16. [Randomness Attacks](#randomness-attacks)
-17. [Short Address Attack](#short-address-attack)
-18. [Time Manipulation](#time-manipulation)
-19. [Governance Token Manipulation](#governance-token-manipulation)
-20. [Side-Channel Attacks](#side-channel-attacks)
-21. [Social Engineering Attacks](#social-engineering-attacks)
-22. [Authorization Flaws](#authorization-flaws)
-23. [Insufficient Gas Griefing](#insufficient-gas-griefing)
-24. [Vault Inflation Attack](#vault-inflation-attack)
-25. [WETH Permit Vulnerability Explanation](#weth-permit-vulnerability-explanation)
-26. [Deploy Different Contracts at Same Address](#deploy-different-contracts-at-same-address)
-27. [Bypass Contract Size Check](#bypass-contract-size-check)
-28. [Storage Collision in Proxy Patterns](#storage-collision-in-proxy-patterns)
-29. [Contract Upgrade Vulnerabilities](#contract-upgrade-vulnerabilities)
-30. [Code Optimization](#code-optimization)
+7. [Unchecked External Call Return Values](#unchecked-external-call-return-values)
+8. [Oracle Manipulation](#oracle-manipulation)
+9. [Denial of Service (DoS)](#denial-of-service-dos)
+10. [Delegatecall Injection](#delegatecall-injection)
+11. [Storage Collision in Proxy Patterns](#storage-collision-in-proxy-patterns)
+12. [Contract Upgrade Vulnerabilities](#contract-upgrade-vulnerabilities)
+13. [Signature Replay Attacks](#signature-replay-attacks)
+14. [ERC20 Approve/Allowance Race Condition](#erc20-approveallowance-race-condition)
+15. [Incorrect Handling of Non-standard ERC20 Tokens](#incorrect-handling-of-non-standard-erc20-tokens)
+16. [Denial of Service with Unexpected Revert](#denial-of-service-with-unexpected-revert)
+17. [Uninitialized Storage Pointers](#uninitialized-storage-pointers)
+18. [Variable Shadowing](#variable-shadowing)
+19. [Default Function and Variable Visibility](#default-function-and-variable-visibility)
+20. [Phishing with `tx.origin`](#phishing-with-txorigin)
+21. [Fallback Function Exploitation](#fallback-function-exploitation)
+22. [Force-Funding Contracts](#force-funding-contracts)
+23. [Short Address Attack](#short-address-attack)
+24. [Signature Malleability](#signature-malleability)
+25. [Cross-Chain Replay Attacks](#cross-chain-replay-attacks)
+26. [Randomness Attacks](#randomness-attacks)
+27. [Time Manipulation](#time-manipulation)
+28. [Transaction Order Dependence (Race Conditions)](#transaction-order-dependence-race-conditions)
+29. [Front Running](#front-running)
+30. [Contract Interaction Vulnerabilities](#contract-interaction-vulnerabilities)
+31. [Governance Token Manipulation](#governance-token-manipulation)
+32. [Insufficient Gas Griefing](#insufficient-gas-griefing)
+33. [Vault Inflation Attack](#vault-inflation-attack)
+34. [Unsecured Inheritance Hierarchies](#unsecured-inheritance-hierarchies)
+35. [Self Destruct Vulnerabilities](#self-destruct-vulnerabilities)
+36. [Bypass Contract Size Check](#bypass-contract-size-check)
+37. [Deploy Different Contracts at Same Address](#deploy-different-contracts-at-same-address)
+38. [Side-Channel Attacks](#side-channel-attacks)
+39. [Social Engineering Attacks](#social-engineering-attacks)
+40. [Block Gas Limit Dependence](#block-gas-limit-dependence)
+41. [WETH Permit Vulnerability Explanation](#weth-permit-vulnerability-explanation)
+42. [Access Control via `msg.value`](#access-control-via-msgvalue)
+43. [Incorrect Constructor Usage in Older Solidity Versions](#incorrect-constructor-usage-in-older-solidity-versions)
+44. [Function Design](#function-design)
+    - [1. Use External Functions](#1-use-external-functions)
+    - [2. Minimize Function Parameters](#2-minimize-function-parameters)
+45. [Code Optimization](#code-optimization)
     - [1. Minimize Storage Access](#1-minimize-storage-access)
     - [2. Avoid Loops](#2-avoid-loops)
     - [3. Optimize Data Structures](#3-optimize-data-structures)
     - [4. Use Precompiled Contracts](#4-use-precompiled-contracts)
     - [5. Enable Compiler Optimizations](#5-enable-compiler-optimizations)
-31. [Function Design](#function-design)
-    - [1. Use External Functions](#1-use-external-functions)
-    - [2. Minimize Function Parameters](#2-minimize-function-parameters)
-32. [Additional Tips for Gas Optimization](#additional-tips-for-gas-optimization)
+46. [Additional Tips for Gas Optimization](#additional-tips-for-gas-optimization)
     - [Use Events Wisely](#use-events-wisely)
+
 ---
 
 ### **Rationale Behind the Ordering:**
 
-1. **Reentrancy Vulnerabilities**: One of the most well-known and frequently exploited vulnerabilities in smart contracts, leading to massive losses in DeFi hacks. Auditors must know how to identify and mitigate it.
-   
-2. **Unchecked External Call Return Values**: Common oversight that can lead to unexpected behavior in contracts, especially when interacting with ERC-20 tokens and external contracts.
+1. **Reentrancy Vulnerabilities**: A highly prevalent and dangerous vulnerability that has led to significant losses, such as the infamous DAO hack. It's critical for auditors to identify and mitigate reentrancy issues.
 
-3. **Phishing via `tx.origin`**: Known issue that auditors should spot easily, as it opens up contracts to phishing attacks and unauthorized access.
+2. **Access Control and Ownership**: Flaws in access control can allow unauthorized users to perform privileged actions, leading to complete control over the contract or theft of funds.
 
-4. **Integer Overflow/Underflow**: Classic issue with arithmetic operations, particularly for older Solidity versions before overflow checks were built-in. 
+3. **Authorization Flaws**: Similar to access control, but includes broader issues like improper authorization checks, which can be exploited to bypass security measures.
 
-5. **Access Control and Ownership**: Access control flaws are one of the most critical mistakes in smart contracts. Ensuring that only authorized users can perform sensitive actions is a fundamental task for auditors.
+4. **Integer Overflow and Underflow**: Before Solidity 0.8.0, arithmetic operations could overflow or underflow, causing unexpected behavior. This has been a common source of vulnerabilities.
 
-6. **Flash Loan Attacks**: Flash loans are widely used in DeFi and can be exploited for price manipulation, arbitrage, and reentrancy issues. Auditors must know how to handle these vulnerabilities.
+5. **Unprotected Initializer Functions in Upgradable Contracts**: Failure to secure initializer functions can allow attackers to re-initialize contracts, taking over ownership or resetting critical variables.
 
-7. **Front-Running Attacks**: Especially critical in DeFi applications where transaction timing matters, front-running can allow attackers to exploit pending transactions.
+6. **Flash Loan Attacks Explanation and Mitigation**: Flash loans have been used in complex attacks to manipulate markets, exploit reentrancy, and drain funds. Understanding flash loan vulnerabilities is essential.
 
-8. **Delegatecall Injection**: Vulnerabilities related to `delegatecall` can cause major state corruption and are a high priority for auditors to understand.
+7. **Unchecked External Call Return Values**: Ignoring the return values of external calls can lead to false assumptions about successful execution, causing logical flaws.
 
-9. **Oracle Manipulation**: DeFi projects heavily rely on oracles, and manipulated oracle data can lead to incorrect pricing and contract behavior.
+8. **Oracle Manipulation**: Contracts relying on oracles can be exploited if attackers manipulate oracle data, leading to incorrect contract behavior.
 
-10. **Denial of Service (DoS)**: A common issue where contracts are rendered unusable through logic flaws or manipulation. A critical issue for security auditors to spot.
+9. **Denial of Service (DoS)**: DoS attacks can render contract functions unusable, either by consuming excessive gas or exploiting logical flaws.
 
-11. **Self-Destruct Vulnerabilities**: Misuse of `selfdestruct` can allow attackers to shut down contracts and take over funds, so this is important for auditors to check.
+10. **Delegatecall Injection**: Improper use of `delegatecall` can lead to code injection, allowing attackers to execute arbitrary code within the context of the calling contract.
 
-12. **Signature Replay Attacks**: Replay vulnerabilities can lead to repeated unauthorized transactions, making this a frequent issue auditors need to prevent.
+11. **Storage Collision in Proxy Patterns**: Incorrect storage alignment in proxy contracts can corrupt state variables, leading to unexpected behavior or security breaches.
 
-13. **Fallback Function Exploitation**: Fallback functions, if improperly designed, can be exploited for malicious purposes, including gas griefing and accidental ether acceptance.
+12. **Contract Upgrade Vulnerabilities**: Flaws in the upgrade mechanism can allow unauthorized upgrades or introduce vulnerabilities in new implementations.
 
-14. **Contract Interaction Vulnerabilities**: External interactions between contracts are common and need to be reviewed carefully to avoid unexpected behaviors or attacks.
+13. **Signature Replay Attacks**: Without proper nonce management, signatures can be reused maliciously, authorizing unintended transactions.
 
-15. **Cross-Chain Replay Attacks**: With cross-chain interactions becoming more frequent, replay attacks between chains are important for security auditors to identify.
+14. **ERC20 Approve/Allowance Race Condition**: A known issue in the ERC20 standard that can lead to double-spending if allowances are not properly managed.
 
-16. **Randomness Attacks**: Poor sources of randomness can allow attackers to predict outcomes in lotteries and games, so auditors must be vigilant about these issues.
+15. **Incorrect Handling of Non-standard ERC20 Tokens**: Some tokens do not follow the standard, and improper handling can lead to loss of tokens or failed transactions.
 
-17. **Short Address Attack**: Though less common, this vulnerability still exists in older contracts and may result in the misalignment of parameters and fund mismanagement.
+16. **Denial of Service with Unexpected Revert**: Failing to handle reverts in external calls can halt contract execution, leading to DoS conditions.
 
-18. **Time Manipulation**: Auditors need to watch out for contracts that rely on `block.timestamp` for sensitive operations, as miners can manipulate this value within a small range.
+17. **Uninitialized Storage Pointers**: Can lead to storage collisions and overwriting of critical variables due to default storage references.
 
-19. **Governance Token Manipulation**: With decentralized governance systems growing, manipulating voting power through token accumulation is a real threat that auditors must account for.
+18. **Variable Shadowing**: Occurs when a local variable overrides a state variable, potentially causing logic errors.
 
-20. **Side-Channel Attacks**: More advanced but relevant for highly sensitive contracts, auditors need to ensure no information leakage occurs via gas usage or timing differences.
+19. **Default Function and Variable Visibility**: Not explicitly declaring visibility can lead to unintended exposure of functions or variables.
 
-21. **Social Engineering Attacks**: While these aren’t technically contract-level issues, auditors should help developers secure their overall interaction flows and user interfaces to avoid phishing and social engineering exploits.
+20. **Phishing with `tx.origin`**: Reliance on `tx.origin` for authorization can be exploited through phishing attacks, allowing unauthorized access.
 
-22. **Authorization Flaws**: Access control is always a key priority in any security audit, as poorly implemented checks can allow unauthorized access to critical contract functions.
+21. **Fallback Function Exploitation**: Misuse of fallback functions can lead to unintended Ether acceptance or function calls.
 
-23. **Insufficient Gas Griefing**: Contracts that handle external calls improperly, such as with insufficient gas, can be exploited to cause denial of service.
+22. **Force-Funding Contracts**: Attackers can force Ether into contracts, disrupting logic that depends on the contract's balance.
 
-24. **Vault Inflation Attack**: Related to minting, this attack can artificially inflate token supplies, reducing the value of other tokens.
+23. **Short Address Attack**: Malformed input data can cause parameter misalignment, leading to incorrect values being used in functions.
 
-25. **WETH Permit Vulnerability Explanation**: Specific to `permit` functions in ERC-20 tokens like WETH, this is an important replay attack vector that auditors should understand.
+24. **Signature Malleability**: Attackers can manipulate signatures to create different but valid signatures, potentially bypassing signature checks.
 
-26. **Deploy Different Contracts at Same Address**: The issue arises when a contract is self-destructed and a new contract is redeployed at the same address, misleading users.
+25. **Cross-Chain Replay Attacks**: Reusing signatures or transactions across different chains can lead to unintended actions.
 
-27. **Bypass Contract Size Check**: Some contracts bypass the 24KB contract size limit by splitting logic, which can lead to fragmented and insecure code.
+26. **Randomness Attacks**: Predictable sources of randomness can be exploited to manipulate outcomes in games or lotteries.
 
-28. **Storage Collision in Proxy Patterns**: A specific vulnerability in proxy contracts that auditors must be aware of when ensuring upgrades don’t corrupt storage.
+27. **Time Manipulation**: Miners can manipulate timestamps within a certain range, affecting time-dependent logic.
 
-29. **Contract Upgrade Vulnerabilities**: Auditors need to check if upgrade mechanisms are secure and prevent unauthorized changes to logic or data.
+28. **Transaction Order Dependence (Race Conditions)**: The outcome of transactions can be affected by their ordering, potentially exploited by attackers.
 
-30. **Gas Optimization**: While not a direct security issue, optimizing gas usage is crucial for contract efficiency and preventing unnecessary costs or bottlenecks.
+29. **Front Running**: Attackers can monitor pending transactions and submit their own transactions with higher gas prices to be processed first.
 
-31. **Function Design**: Proper function design, especially around minimizing parameters and using external visibility, is important for efficiency and clarity.
+30. **Contract Interaction Vulnerabilities**: Unverified interactions with external contracts can introduce vulnerabilities like reentrancy or unexpected behavior.
 
-32. **Additional Gas Optimization Techniques**: More advanced gas-saving techniques can improve the performance of contracts, and auditors should be familiar with them.
+31. **Governance Token Manipulation**: Accumulating tokens to influence governance decisions can undermine decentralized control.
+
+32. **Insufficient Gas Griefing**: Attackers can cause transactions to fail by manipulating gas limits, leading to DoS conditions.
+
+33. **Vault Inflation Attack**: Unauthorized minting or supply manipulation can devalue tokens and harm users.
+
+34. **Unsecured Inheritance Hierarchies**: Improper use of inheritance can introduce vulnerabilities through unintended function overrides.
+
+35. **Self Destruct Vulnerabilities**: Unauthorized use of `selfdestruct` can lead to loss of contract functionality and funds.
+
+36. **Bypass Contract Size Check**: Splitting contracts to bypass size limits can lead to complex and insecure code.
+
+37. **Deploy Different Contracts at Same Address**: Redeploying contracts at the same address can mislead users and applications.
+
+38. **Side-Channel Attacks**: Exploiting information leakage through gas usage or timing to infer sensitive data.
+
+39. **Social Engineering Attacks**: Manipulating individuals into divulging confidential information or performing actions that compromise security.
+
+40. **Block Gas Limit Dependence**: Contracts that exceed the block gas limit can fail, leading to DoS vulnerabilities.
+
+41. **WETH Permit Vulnerability Explanation**: Specific replay attack vectors related to the `permit` function in ERC20 tokens.
+
+42. **Access Control via `msg.value`**: Using Ether value for access control can be exploited by attackers who can afford the required amount.
+
+43. **Incorrect Constructor Usage in Older Solidity Versions**: Constructors defined incorrectly can become publicly callable functions.
+
+44. **Function Design**: Improper function visibility and parameter management can lead to inefficiencies and vulnerabilities.
+    - **1. Use External Functions**
+    - **2. Minimize Function Parameters**
+
+45. **Code Optimization**: While not directly security-related, inefficient code can lead to increased gas costs and potential exploitation.
+    - **1. Minimize Storage Access**
+    - **2. Avoid Loops**
+    - **3. Optimize Data Structures**
+    - **4. Use Precompiled Contracts**
+    - **5. Enable Compiler Optimizations**
+
+46. **Additional Tips for Gas Optimization**: Further techniques to enhance contract efficiency.
+    - **Use Events Wisely**
 
 ---
 
-This ordering emphasizes the most commonly seen vulnerabilities for security auditors, with a focus on real-world impact in smart contract security audits.
+This ordering emphasizes the **most critical and commonly exploited vulnerabilities** that security auditors should prioritize. By addressing these issues first, auditors can mitigate the most significant risks in smart contract security.
 
 ---
 
@@ -2917,6 +2967,384 @@ contract ImplementationV2Safe {
 
 - **Use Upgradeable Libraries:** Utilize established libraries and patterns like OpenZeppelin's `UpgradeableProxy` and `Initializable` contracts to manage storage layouts and initialization correctly.
 - **Thorough Testing:** Before deploying upgrades, thoroughly test the new implementation to ensure storage variables map correctly.
+---
+
+1. **ERC20 Approve/Allowance Race Condition**
+
+   - **Vulnerability Explanation:**
+     The standard ERC20 `approve` function can lead to race conditions. If a user wants to change the allowance for a spender, the standard requires setting it to zero before setting the new value. Failing to do this can allow an attacker to spend both the old and new allowance.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract Token {
+         mapping(address => uint256) public balanceOf;
+         mapping(address => mapping(address => uint256)) public allowance;
+
+         function approve(address spender, uint256 amount) public returns (bool) {
+             allowance[msg.sender][spender] = amount;  // Directly setting new allowance
+             return true;
+         }
+     }
+     ```
+
+   - **Fixed Contract Example:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract SafeToken {
+         mapping(address => uint256) public balanceOf;
+         mapping(address => mapping(address => uint256)) public allowance;
+
+         function approve(address spender, uint256 amount) public returns (bool) {
+             require(
+                 amount == 0 || allowance[msg.sender][spender] == 0,
+                 "Must set allowance to zero before changing it"
+             );
+             allowance[msg.sender][spender] = amount;
+             return true;
+         }
+     }
+     ```
+
+   - **Prevention Technique:**
+     Require users to first set the allowance to zero before changing it to a new value, preventing race conditions.
+
+2. **Uninitialized Storage Pointers**
+
+   - **Vulnerability Explanation:**
+     Uninitialized storage pointers can unintentionally point to the same storage location, leading to variable shadowing and overwriting critical data.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract UninitializedPointer {
+         struct Data {
+             uint256 value;
+         }
+
+         Data public data;
+
+         function setValue(uint256 _value) public {
+             Data storage newData;
+             newData.value = _value;  // Uninitialized pointer overwriting storage
+         }
+     }
+     ```
+
+   - **Fixed Contract Example:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract InitializedPointer {
+         struct Data {
+             uint256 value;
+         }
+
+         Data public data;
+
+         function setValue(uint256 _value) public {
+             Data storage newData = data;  // Properly initialized storage pointer
+             newData.value = _value;
+         }
+     }
+     ```
+
+   - **Prevention Technique:**
+     Always initialize storage pointers before use to ensure they point to the correct storage location.
+
+3. **Default Function and Variable Visibility**
+
+   - **Vulnerability Explanation:**
+     In Solidity versions prior to 0.5.0, functions and state variables defaulted to `public` visibility if no visibility was specified, potentially exposing internal logic or data.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.4.24;
+
+     contract DefaultVisibility {
+         uint256 counter;  // Defaults to public in older Solidity versions
+
+         function increment() {
+             counter += 1;  // Function defaults to public
+         }
+     }
+     ```
+
+   - **Fixed Contract Example:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract ExplicitVisibility {
+         uint256 private counter;
+
+         function increment() public {
+             counter += 1;
+         }
+     }
+     ```
+
+   - **Prevention Technique:**
+     Always explicitly declare the visibility of functions and state variables (`private`, `internal`, `external`, or `public`).
+
+4. **Unprotected Initializer Functions in Upgradable Contracts**
+
+   - **Vulnerability Explanation:**
+     In upgradable proxy patterns, the initializer function must be protected to prevent unauthorized re-initialization, which could reset the contract state or change ownership.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract VulnerableUpgradeable {
+         address public owner;
+
+         function initialize(address _owner) public {
+             owner = _owner;  // No access control
+         }
+     }
+     ```
+
+   - **Fixed Contract Example:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+     contract SecureUpgradeable is Initializable {
+         address public owner;
+
+         function initialize(address _owner) public initializer {
+             owner = _owner;
+         }
+     }
+     ```
+
+   - **Prevention Technique:**
+     Use the `initializer` modifier from OpenZeppelin's upgradeable contracts to ensure the initializer can only be called once.
+
+5. **Variable Shadowing**
+
+   - **Vulnerability Explanation:**
+     Declaring a local variable with the same name as a state variable can lead to confusion and unintended behavior, as the local variable shadows the state variable.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract ShadowingVariables {
+         uint256 public value = 1;
+
+         function setValue() public {
+             uint256 value = 2;  // Shadows the state variable
+         }
+     }
+     ```
+
+   - **Fixed Contract Example:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract NoShadowing {
+         uint256 public value = 1;
+
+         function setValue() public {
+             uint256 newValue = 2;  // Use a different variable name
+             value = newValue;
+         }
+     }
+     ```
+
+   - **Prevention Technique:**
+     Avoid declaring local variables or parameters with the same names as state variables.
+
+6. **Transaction Order Dependence (Race Conditions)**
+
+   - **Vulnerability Explanation:**
+     The outcome of certain contracts can be affected by the order in which transactions are processed, allowing attackers to manipulate the sequence for their benefit.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract Auction {
+         uint256 public highestBid;
+         address public highestBidder;
+
+         function bid() public payable {
+             require(msg.value > highestBid, "Bid too low");
+             highestBidder = msg.sender;
+             highestBid = msg.value;
+         }
+     }
+     ```
+
+   - **Explanation:**
+     An attacker can observe a bid and quickly submit a higher bid in the same block, causing the original bid to fail or be outbid immediately.
+
+   - **Prevention Technique:**
+     Use commit-reveal schemes or randomized mechanisms to reduce predictability and dependence on transaction order.
+
+7. **Block Gas Limit Dependence**
+
+   - **Vulnerability Explanation:**
+     Contracts that require loops or extensive computation may fail if they exceed the block gas limit, leading to Denial of Service (DoS) vulnerabilities.
+
+   - **Prevention Technique:**
+     Avoid designing contracts that require unbounded loops or heavy computation within a single transaction.
+
+8. **Denial of Service with Unexpected Revert**
+
+   - **Vulnerability Explanation:**
+     If a contract doesn't handle reverts from external calls properly, it can be locked into a state where certain functions always fail.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity ^0.8.0;
+
+     contract DoSVulnerable {
+         mapping(address => uint256) public balances;
+
+         function refundAll(address[] memory recipients) public {
+             for (uint256 i = 0; i < recipients.length; i++) {
+                 payable(recipients[i]).transfer(balances[recipients[i]]);
+                 balances[recipients[i]] = 0;
+             }
+         }
+     }
+     ```
+
+   - **Explanation:**
+     If one of the recipient addresses is a contract that reverts on receiving Ether, the entire `refundAll` function will fail.
+
+   - **Prevention Technique:**
+     Handle failures in external calls individually using `call` and continue processing other recipients even if one fails.
+
+9. **Incorrect Constructor Usage in Older Solidity Versions**
+
+   - **Vulnerability Explanation:**
+     Prior to Solidity 0.4.22, constructors were defined as functions with the same name as the contract. If the contract name changes and the constructor name isn't updated, it becomes a public function callable by anyone.
+
+   - **Example of Vulnerable Contract:**
+
+     ```solidity
+     pragma solidity ^0.4.21;
+
+     contract OldContract {
+         function OldContract() public {
+             // This is the constructor
+         }
+     }
+
+     contract NewContract {
+         function OldContract() public {
+             // This function is now a public function, not a constructor
+         }
+     }
+     ```
+
+   - **Prevention Technique:**
+     Use the `constructor` keyword introduced in Solidity 0.4.22 to define constructors, ensuring they are correctly recognized.
+
+10. **Access Control via `msg.value`**
+
+    - **Vulnerability Explanation:**
+      Using the amount of Ether sent (`msg.value`) for access control can be exploited by attackers who can afford the required amount.
+
+    - **Example of Vulnerable Contract:**
+
+      ```solidity
+      // SPDX-License-Identifier: MIT
+      pragma solidity ^0.8.0;
+
+      contract AccessControlVulnerable {
+          function privilegedFunction() public payable {
+              require(msg.value >= 1 ether, "Insufficient Ether");
+              // Execute privileged action
+          }
+      }
+      ```
+
+    - **Prevention Technique:**
+      Use proper authorization mechanisms based on identities (addresses, roles) rather than monetary values.
+
+11. **Force-Funding Contracts**
+
+    - **Vulnerability Explanation:**
+      Attackers can force Ether into a contract without calling a payable function by using `selfdestruct`, potentially disrupting logic that relies on the contract's Ether balance.
+
+    - **Example of Vulnerable Contract:**
+
+      ```solidity
+      // SPDX-License-Identifier: MIT
+      pragma solidity ^0.8.0;
+
+      contract ForceEther {
+          function balanceIsZero() public view returns (bool) {
+              return address(this).balance == 0;
+          }
+      }
+
+      contract Attacker {
+          function attack(address payable target) public payable {
+              selfdestruct(target);
+          }
+      }
+      ```
+
+    - **Prevention Technique:**
+      Avoid relying on `address(this).balance` for critical logic, or implement withdrawal patterns that are resistant to forced Ether.
+
+12. **Incorrect Handling of Non-standard ERC20 Tokens**
+
+    - **Vulnerability Explanation:**
+      Some tokens do not return a boolean value in `transfer` and `transferFrom` functions. Assuming a return value can cause issues when interacting with such tokens.
+
+    - **Prevention Technique:**
+      Use wrappers or libraries like OpenZeppelin's `SafeERC20` that handle non-standard ERC20 tokens safely.
+
+13. **Unsecured Inheritance Hierarchies**
+
+    - **Vulnerability Explanation:**
+      Incorrect use of multiple inheritance can lead to function overrides that change the behavior of the contract in unexpected ways.
+
+    - **Prevention Technique:**
+      Be cautious with multiple inheritance and ensure that the parent contracts are designed to be composed safely.
+
+14. **Signature Malleability**
+
+    - **Vulnerability Explanation:**
+      Attackers can exploit malleable signatures to create different signatures that are still valid, potentially bypassing signature checks.
+
+    - **Prevention Technique:**
+      Use `ecrecover` correctly and consider using EIP-712 for typed structured data hashing and signing.
+
 
 ---
 These examples showcase how to address and mitigate common vulnerabilities in smart contracts.
