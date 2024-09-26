@@ -13,7 +13,7 @@ Let's embark on the journey of building secure decentralized applications and sa
 
 ---
 
-For security auditors, the most critical vulnerabilities to know and address first are those that frequently result in real-world exploits. The vulnerabilities are ordered based on their severity, frequency of occurrence, and the potential impact they can have if exploited. This ensures that auditors focus on the most significant risks first when assessing the security of smart contracts. This is reordered list of smart contract vulnerabilities based on the most common and important issues that security auditors should be familiar with:
+**NOTE: For security auditors, the most critical vulnerabilities to know and address first are those that frequently result in real-world exploits. The vulnerabilities are ordered based on their severity, frequency of occurrence, and the potential impact they can have if exploited. This ensures that auditors focus on the most significant risks first when assessing the security of smart contracts. This is reordered list of smart contract vulnerabilities based on the most common and important issues that security auditors should be familiar with:**
 
 
 ## **Contents** (Prioritized for Security Auditors)
