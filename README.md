@@ -19,13 +19,15 @@ Let's embark on the journey of building secure decentralized applications and sa
 
 ---
 
+
+
 ## **Contents** (Prioritized for Security Auditors)
 
 1. [Re-Entrancy](#re-entrancy)
-2. [Access Control and Ownership](access-control-and-ownership)
+2. [Access Control and Ownership](#access-control-and-ownership)
 3. [Authorization Flaws](#authorization-flaws)
 4. [Arithmetic Overflow and Underflow](#arithmetic-overflow-and-underflow)
-5. [Unprotected Initializer Functions in Upgradable Contracts](unprotected-initializer-functions-in-upgradable-contracts)
+5. [Unprotected Initializer Functions in Upgradable Contracts](#unprotected-initializer-functions-in-upgradable-contracts)
 6. [Flash Loan Attacks Explanation and Mitigation](#flash-loan-attacks-explanation-and-mitigation)
    - [1. Vulnerable to Price Manipulation with Flash Loans](#1-vulnerable-to-price-manipulation-with-flash-loans)
    - [2. Vulnerable to Re-Entrancy with Flash Loans](#2-vulnerable-to-re-entrancy-with-flash-loans)
@@ -80,8 +82,9 @@ Let's embark on the journey of building secure decentralized applications and sa
 46. [Additional Tips for Gas Optimization](#additional-tips-for-gas-optimization)
     - [Use Events Wisely](#use-events-wisely)
 
-
 ---
+
+
 
 ### **Rationale Behind the Ordering:**
 
