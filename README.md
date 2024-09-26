@@ -2529,6 +2529,299 @@ contract TimeManipulationSafe {
 
 ---
 
+### **Authorization Flaws**
+
+**Vulnerability Explanation:**
+
+Authorization flaws occur when a contract incorrectly implements access control, allowing unauthorized users to perform restricted actions. This can happen due to logic errors, missing checks, or incorrect use of modifiers, leading to potential loss of funds or control over the contract.
+
+#### **Vulnerable Contract Example:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract AuthorizationVulnerable {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Intended to be an admin-only function
+    function setOwner(address newOwner) public {
+        owner = newOwner;  // No access control
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Not authorized");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+```
+
+**Explanation:**
+
+- **Missing Access Control:** The `setOwner` function lacks any access control, allowing anyone to change the contract's owner.
+- **Unauthorized Access:** An attacker can call `setOwner` to become the owner and then call `withdraw` to drain the contract's funds.
+
+#### **Fixed Contract Example:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract AuthorizationSafe {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Modifier to restrict access to the owner
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not authorized");
+        _;
+    }
+
+    // Only the owner can set a new owner
+    function setOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+
+    function withdraw() public onlyOwner {
+        payable(owner).transfer(address(this).balance);
+    }
+}
+```
+
+**Prevention Technique:**
+
+- **Implement Access Control Modifiers:** Use modifiers like `onlyOwner` to restrict function access.
+- **Consistent Access Checks:** Ensure all sensitive functions include appropriate access checks.
+- **Use Established Libraries:** Consider using access control libraries like OpenZeppelin's `Ownable` for standardized and tested access patterns.
+- **Code Reviews and Audits:** Regularly review code to identify and fix missing or incorrect access control logic.
+
+---
+
+### **Insufficient Gas Griefing**
+
+**Vulnerability Explanation:**
+
+Insufficient gas griefing occurs when an attacker can cause a transaction to fail by manipulating the gas limit or gas stipend, leading to denial of service or preventing certain users from interacting with the contract. This often happens in functions that rely on transferring Ether to external addresses without proper handling of gas limitations.
+
+#### **Vulnerable Contract Example:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract InsufficientGasVulnerable {
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function refund() public {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "No balance to refund");
+
+        // Using transfer, which forwards a fixed gas stipend of 2300
+        payable(msg.sender).transfer(amount);
+
+        balances[msg.sender] = 0;
+    }
+}
+```
+
+**Explanation:**
+
+- **Fixed Gas Stipend:** The `transfer` function forwards a fixed gas stipend (2300 gas), which may not be enough if `msg.sender` is a contract with a fallback function requiring more gas.
+- **Griefing Potential:** An attacker can create a contract with a fallback function that consumes more than 2300 gas, causing the `refund` function to fail and preventing legitimate refunds.
+
+#### **Fixed Contract Example:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract InsufficientGasSafe {
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function refund() public {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "No balance to refund");
+
+        balances[msg.sender] = 0;  // Update state before external call
+
+        // Use call with a gas limit and handle potential failures
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        if (!success) {
+            // If the transfer fails, revert the balance update
+            balances[msg.sender] = amount;
+            revert("Refund failed");
+        }
+    }
+}
+```
+
+**Prevention Technique:**
+
+- **Use `call` Over `transfer` or `send`:** `call` allows you to forward all available gas or specify a gas amount, avoiding fixed gas stipend issues.
+- **Handle Failed Transfers:** Implement logic to handle failed Ether transfers gracefully, possibly allowing users to retry or withdraw funds later.
+- **Update State Before External Calls:** Update contract state before making external calls to prevent re-entrancy and ensure consistency.
+- **Consider Pull Over Push:** Use the withdrawal (pull) pattern instead of pushing Ether to users, letting them withdraw funds when convenient.
+
+---
+
+### **Storage Collision in Proxy Patterns**
+
+**Vulnerability Explanation:**
+
+Storage collision occurs in proxy patterns when the storage layouts of the proxy and implementation contracts overlap improperly. This can lead to unintended overwriting of storage variables, causing incorrect behavior or security vulnerabilities.
+
+#### **Vulnerable Contract Example:**
+
+**Proxy Contract:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Proxy {
+    address public implementation;
+
+    constructor(address _implementation) {
+        implementation = _implementation;
+    }
+
+    fallback() external payable {
+        address impl = implementation;
+        assembly {
+            // Delegate all calls to the implementation contract
+            calldatacopy(0, 0, calldatasize())
+            let result := delegatecall(gas(), impl, 0, calldatasize(), 0, 0)
+            returndatacopy(0, 0, returndatasize())
+            switch result
+                case 0 {
+                    revert(0, returndatasize())
+                }
+                default {
+                    return(0, returndatasize())
+                }
+        }
+    }
+}
+```
+
+**Implementation Contract:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ImplementationV1 {
+    address public owner;  // Stored at slot 0
+    uint256 public value;  // Stored at slot 1
+
+    function setValue(uint256 _value) public {
+        value = _value;
+    }
+}
+```
+
+**Upgraded Implementation Contract:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ImplementationV2 {
+    uint256 public value;      // Stored at slot 0
+    address public owner;      // Stored at slot 1
+    string public name;        // New variable at slot 2
+
+    function setValue(uint256 _value) public {
+        value = _value;
+    }
+}
+```
+
+**Explanation:**
+
+- **Storage Layout Mismatch:** In `ImplementationV2`, the order of state variables has changed. `value` is now at slot 0, and `owner` is at slot 1, the reverse of `ImplementationV1`.
+- **Collision:** When the proxy delegates calls to `ImplementationV2`, the storage slots do not match, causing `owner` and `value` to reference incorrect data.
+- **Security Risk:** This can lead to unauthorized access or corrupted state, as variables no longer point to the intended storage locations.
+
+#### **Fixed Contract Example:**
+
+**Upgraded Implementation Contract with Correct Storage Layout:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ImplementationV2Safe {
+    address public owner;      // Must remain at slot 0
+    uint256 public value;      // Must remain at slot 1
+    string public name;        // New variable at slot 2
+
+    function setValue(uint256 _value) public {
+        value = _value;
+    }
+
+    function setName(string memory _name) public {
+        name = _name;
+    }
+}
+```
+
+**Prevention Technique:**
+
+- **Consistent Storage Layouts:** Ensure that the storage layout in the upgraded implementation contracts remains consistent with the original.
+- **Use Storage Gaps:** Implement storage gaps to allow for future variable additions without affecting existing storage slots.
+  
+  ```solidity
+  // SPDX-License-Identifier: MIT
+  pragma solidity ^0.8.0;
+
+  contract ImplementationV1 {
+      address public owner;  // Slot 0
+      uint256 public value;  // Slot 1
+
+      uint256[50] private __gap;  // Reserve slots for future variables
+  }
+  ```
+
+- **Inheritance for Upgrades:** Use an upgradeable pattern that relies on inheritance, where the new contract inherits from the old one, preserving storage slots.
+  
+  ```solidity
+  // SPDX-License-Identifier: MIT
+  pragma solidity ^0.8.0;
+
+  contract ImplementationV1 {
+      address public owner;
+      uint256 public value;
+  }
+
+  contract ImplementationV2 is ImplementationV1 {
+      string public name;
+
+      function setName(string memory _name) public {
+          name = _name;
+      }
+  }
+  ```
+
+- **Use Upgradeable Libraries:** Utilize established libraries and patterns like OpenZeppelin's `UpgradeableProxy` and `Initializable` contracts to manage storage layouts and initialization correctly.
+- **Thorough Testing:** Before deploying upgrades, thoroughly test the new implementation to ensure storage variables map correctly.
+
+---
 These examples showcase how to address and mitigate common vulnerabilities in smart contracts.
 
 ---
