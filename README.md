@@ -16,7 +16,7 @@ For security auditors, the most critical vulnerabilities to know and address fir
 
 ## **Contents** (Prioritized for Security Auditors)
 
-1. [Reentrancy Vulnerabilities](#reentrancy-vulnerabilities)
+1. [Reentrancy Vulnerabilities](#Re-Entrancy)
 2. [Unchecked External Call Return Values](#unchecked-external-call-return-values)
 3. [Phishing via `tx.origin`](#phishing-via-txorigin)
 4. [Integer Overflow/Underflow](#integer-overflowunderflow)
