@@ -16,16 +16,20 @@ Let's embark on the journey of building secure decentralized applications and sa
 **NOTE: For security auditors, the most critical vulnerabilities to know and address first are those that frequently result in real-world exploits. The vulnerabilities are ordered based on their severity, frequency of occurrence, and the potential impact they can have if exploited. This ensures that auditors focus on the most significant risks first when assessing the security of smart contracts. This is reordered list of smart contract vulnerabilities based on the most common and important issues that security auditors should be familiar with:**
 
 
+Certainly! Here's the corrected **Contents** list, ordered according to your specified priorities based on the most common and critical vulnerabilities, with proper links matching the headings in your file:
+
+---
+
 ## **Contents** (Prioritized for Security Auditors)
 
-1. [Reentrancy Vulnerabilities](#reentrancy-vulnerabilities)
-2. [Access Control and Ownership](#access-control-and-ownership)
+1. [Re-Entrancy](#re-entrancy)
+2. Access Control and Ownership
 3. [Authorization Flaws](#authorization-flaws)
-4. [Integer Overflow and Underflow](#integer-overflow-and-underflow)
-5. [Unprotected Initializer Functions in Upgradable Contracts](#unprotected-initializer-functions-in-upgradable-contracts)
+4. [Arithmetic Overflow and Underflow](#arithmetic-overflow-and-underflow)
+5. Unprotected Initializer Functions in Upgradable Contracts
 6. [Flash Loan Attacks Explanation and Mitigation](#flash-loan-attacks-explanation-and-mitigation)
    - [1. Vulnerable to Price Manipulation with Flash Loans](#1-vulnerable-to-price-manipulation-with-flash-loans)
-   - [2. Vulnerable to Reentrancy with Flash Loans](#2-vulnerable-to-reentrancy-with-flash-loans)
+   - [2. Vulnerable to Re-Entrancy with Flash Loans](#2-vulnerable-to-re-entrancy-with-flash-loans)
    - [3. Vulnerable to Oracle Manipulation with Flash Loans](#3-vulnerable-to-oracle-manipulation-with-flash-loans)
    - [4. Vulnerable to Liquidation Attacks with Flash Loans](#4-vulnerable-to-liquidation-attacks-with-flash-loans)
 7. [Unchecked External Call Return Values](#unchecked-external-call-return-values)
@@ -56,7 +60,7 @@ Let's embark on the journey of building secure decentralized applications and sa
 32. [Insufficient Gas Griefing](#insufficient-gas-griefing)
 33. [Vault Inflation Attack](#vault-inflation-attack)
 34. [Unsecured Inheritance Hierarchies](#unsecured-inheritance-hierarchies)
-35. [Self Destruct Vulnerabilities](#self-destruct-vulnerabilities)
+35. [Self-Destruct Vulnerabilities](#self-destruct-vulnerabilities)
 36. [Bypass Contract Size Check](#bypass-contract-size-check)
 37. [Deploy Different Contracts at Same Address](#deploy-different-contracts-at-same-address)
 38. [Side-Channel Attacks](#side-channel-attacks)
@@ -76,6 +80,7 @@ Let's embark on the journey of building secure decentralized applications and sa
     - [5. Enable Compiler Optimizations](#5-enable-compiler-optimizations)
 46. [Additional Tips for Gas Optimization](#additional-tips-for-gas-optimization)
     - [Use Events Wisely](#use-events-wisely)
+
 
 ---
 
